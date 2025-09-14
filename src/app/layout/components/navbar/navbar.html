@@ -1,10 +1,14 @@
-<nav class="h-14 px-4 flex items-center justify-between border-b bg-white">
-  <div class="font-semibold tracking-wide">Company</div>
-  <button class="p-2 rounded hover:bg-gray-100" (click)="toggleSidebar.emit()"
-          aria-label="Toggle sidebar">
+<nav class="h-14 px-4 flex items-center justify-between border-b bg-secondary">
+  <div class="font-semibold tracking-wide">Monitor The Situation</div>
+
+  <button
+    class="p-2 rounded group"
+    (click)="toggleSidebar.emit()"
+    aria-label="Toggle sidebar"
+  >
     <!-- hamburger -->
-    <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
-    <span class="block w-6 h-0.5 bg-gray-800 mb-1"></span>
-    <span class="block w-6 h-0.5 bg-gray-800"></span>
+    <span class="block w-6 h-0.5 bg-text mb-1 group-hover:bg-primary"></span>
+    <span class="block w-6 h-0.5 bg-text mb-1 group-hover:bg-primary"></span>
+    <span class="block w-6 h-0.5 bg-text group-hover:bg-primary"></span>
   </button>
 </nav>
