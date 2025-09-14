@@ -33,8 +33,8 @@ export class GlobeComponent implements AfterViewInit, OnDestroy {
       .showAtmosphere(true)
       .atmosphereColor('#a7c5ff')
       .atmosphereAltitude(0.25)
-      .backgroundColor('#ffffff')
-      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .backgroundColor('#121826')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-day.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png');
 
     // --- OrbitControls (safe cross-version mapping; no DOLLY_PAN requirement) ---

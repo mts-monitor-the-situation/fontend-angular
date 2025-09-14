@@ -3,7 +3,7 @@
   display: grid;
   grid-template-rows: 56px 1fr;
   grid-template-columns: 1fr 0; /* collapsed by default */
-  transition: grid-template-columns 0.25s ease;
+  // transition: grid-template-columns 0.25s ease;
   overflow: hidden;
 }
 .layout-grid.open {
@@ -13,7 +13,6 @@
 .nav {
   grid-row: 1/2;
   grid-column: 1/-1;
-  background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
 .main {
@@ -79,7 +78,6 @@
   inset: 0; /* top/right/bottom/left: 0 */
   width: 100vw;
   height: 100vh;
-  background: #fff;
   display: flex;
   flex-direction: column;
   /* Respect safe areas on iOS */

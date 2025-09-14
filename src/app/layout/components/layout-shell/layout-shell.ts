@@ -9,25 +9,37 @@ import { SelectionService } from '../../../core/services/selection/selection';
   styleUrl: './layout-shell.scss',
 })
 export class LayoutShell implements OnInit, OnDestroy {
-  sidebarOpen = true;
+  sidebarOpenDesktop = false;
+  sidebarOpenMobile = false;
   private sub?: Subscription;
 
   constructor(private sel: SelectionService) {}
 
   ngOnInit(): void {
-    // Default based on screen size
-    this.sidebarOpen = window.innerWidth >= 1024; // desktop breakpoint
+    // Default: open only on desktop
+    this.sidebarOpenDesktop = window.innerWidth >= 1024;
+
     this.sub = this.sel.coord$.subscribe((c) => {
       if (c && (c.lat !== 0 || c.lng !== 0)) {
-        this.sidebarOpen = true; // <— auto-open on selection
+        if (window.innerWidth >= 1024) {
+          this.sidebarOpenDesktop = true;  // auto-open on selection
+        } else {
+          this.sidebarOpenMobile = true;   // open overlay on mobile
+        }
       }
     });
   }
+
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }
 
   toggleSidebar() {
-    this.sidebarOpen = !this.sidebarOpen;
+    if (window.innerWidth >= 1024) {
+      this.sidebarOpenDesktop = !this.sidebarOpenDesktop;
+    } else {
+      this.sidebarOpenMobile = !this.sidebarOpenMobile;
+    }
   }
 }
+
