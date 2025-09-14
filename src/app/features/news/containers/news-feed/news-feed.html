@@ -1,0 +1,10 @@
+<ul class="divide-y">
+  <li *ngFor="let n of items" class="p-3 hover:bg-gray-50">
+    <a [href]="n.url" target="_blank" class="font-medium text-gray-900">{{ n.title }}</a>
+    <div class="text-xs text-gray-500 mt-1">
+      {{ n.source }} • {{ n.publishedAt | date:'short' }}
+    </div>
+    <p class="text-sm text-gray-700 mt-1" *ngIf="n.excerpt">{{ n.excerpt }}</p>
+  </li>
+  <li *ngIf="!items?.length" class="p-3 text-sm text-gray-500">Click the globe to load news for that region.</li>
+</ul>

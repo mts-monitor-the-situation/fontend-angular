@@ -1,0 +1,5 @@
+:host ::ng-deep canvas { cursor: grab; }
+:host ::ng-deep canvas:active { cursor: grabbing; }
+
+/* when hovering a point we flip to a pointer */
+:host.point-hover ::ng-deep canvas { cursor: pointer; }

@@ -1,0 +1,10 @@
+/* Tailwind v4 import (works in SCSS global styles) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your global SCSS can live below */
+:root { --brand: #38bdf8; }
+/* Ensure body/app takes full height */
+html, body { height: 100%; overflow: hidden; }
+body { margin: 0; }
