@@ -6,6 +6,7 @@
   // transition: grid-template-columns 0.25s ease;
   overflow: hidden;
 }
+
 .layout-grid.open {
   grid-template-columns: 1fr 380px;
 } /* open state */
