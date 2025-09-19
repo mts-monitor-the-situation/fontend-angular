@@ -1,10 +1,26 @@
-<ul class="divide-y">
-  <li *ngFor="let n of items" class="p-3">
-    <a [href]="n.url" target="_blank" class="font-medium text-primary">{{ n.title }}</a>
-    <div class="text-xs text-gray-500 mt-1">
-      {{ n.source }} • {{ n.publishedAt | date:'short' }}
-    </div>
-    <p class="text-sm text-gray-700 mt-1" *ngIf="n.excerpt">{{ n.excerpt }}</p>
-  </li>
-  <li *ngIf="!items?.length" class="p-3 text-sm text-gray-500">Click the globe to load news for that region.</li>
-</ul>
+<div class="news-feed-timeline">
+  <ul class="tl" role="list">
+    <li *ngFor="let n of items" class="tl-item">
+      <a [href]="n.url" target="_blank" rel="noopener" class="tl-card">
+        <span class="tl-dot" aria-hidden="true"></span>
+
+        <div class="tl-body">
+          <h3 class="tl-title">{{ n.title }}</h3>
+
+          <div class="tl-meta">
+            <span class="tl-source">{{ n.source }}</span>
+            <span class="tl-sep">•</span>
+            <time class="tl-time">{{ n.publishedAt | date:'short' }}</time>
+          </div>
+
+          <p *ngIf="n.excerpt" class="tl-excerpt">{{ n.excerpt }}</p>
+        </div>
+      </a>
+    </li>
+
+    <li *ngIf="!items?.length" class="tl-empty">
+      <div class="tl-empty-ill">🛰️</div>
+      <p>Click the globe to load news for that region.</p>
+    </li>
+  </ul>
+</div>

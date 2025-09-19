@@ -18,7 +18,7 @@ type Pt = { lat: number; lng: number; weight: number };
 })
 export class GlobeComponent implements AfterViewInit, OnDestroy {
   @ViewChild('globe', { static: true }) globeEl!: ElementRef<HTMLDivElement>;
-  @HostBinding('class.point-hover') hoveringPoint = false; // flips cursor to pointer
+  @HostBinding('class.point-hover') hoveringPoint = false;
 
   private globe!: any;
   private ro?: ResizeObserver;
@@ -28,18 +28,16 @@ export class GlobeComponent implements AfterViewInit, OnDestroy {
   constructor(private api: ApiService, private selection: SelectionService) {}
 
   ngAfterViewInit(): void {
-    // --- Base globe (dark) ---
     this.globe = new Globe(this.globeEl.nativeElement)
       .showAtmosphere(true)
       .atmosphereColor('#a7c5ff')
       .atmosphereAltitude(0.25)
-      .backgroundColor('#121826')
-      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-day.jpg')
+      .backgroundColor('#0a0c1b')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png');
 
-    // --- OrbitControls (safe cross-version mapping; no DOLLY_PAN requirement) ---
     const controls = this.globe.controls();
-    controls.enabled = true;            // we toggle this on hover/click
+    controls.enabled = true;
     controls.enableRotate = true;
     controls.enableZoom = true;
     controls.enablePan = false;
@@ -50,65 +48,49 @@ export class GlobeComponent implements AfterViewInit, OnDestroy {
       RIGHT:  MOUSE.PAN
     };
 
-    // Some three versions don't expose TOUCH.DOLLY. Choose best available at runtime.
     const TouchEnum: any = TOUCH as any;
     const TWO_GESTURE =
-      TouchEnum.DOLLY ??           // prefer pure pinch-dolly if present
-      TouchEnum.DOLLY_PAN ??       // next best; pan ignored since enablePan=false
-      TouchEnum.PAN;               // fallback (no pinch zoom; wheel/+/– still work)
-
+      TouchEnum.DOLLY ??
+      TouchEnum.DOLLY_PAN ??
+      TouchEnum.PAN;
     controls.touches = { ONE: TOUCH.ROTATE, TWO: TWO_GESTURE };
 
-    controls.minPolarAngle = 0;
-    controls.maxPolarAngle = Math.PI;
-    controls.minAzimuthAngle = -Infinity;
-    controls.maxAzimuthAngle =  Infinity;
     controls.rotateSpeed = 0.8;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.35;
 
-    // Smooth updates (some globe.gl builds don’t have onRender)
     const tick = () => { if (controls.enabled) controls.update(); this.raf = requestAnimationFrame(tick); };
     this.raf = requestAnimationFrame(tick);
 
-    // --- Responsive sizing ---
     this.fitToContainer();
     this.ro = new ResizeObserver(() => this.fitToContainer());
     this.ro.observe(this.globeEl.nativeElement);
 
-    // --- Better pin UX ---
-    // Hover a pin: show pointer, freeze controls, pause autorotate
     this.globe.onPointHover((p: Pt | null) => {
       this.hoveringPoint = !!p;
       if (p) { controls.enabled = false; controls.autoRotate = false; }
       else   { controls.enabled = true;  controls.autoRotate = true;  }
     });
 
-    // Click a pin: select & briefly freeze to avoid camera nudge
     this.globe.onPointClick((p: Pt | null) => {
       if (!p) return;
       const prevAR = controls.autoRotate;
       controls.enabled = false;
       controls.autoRotate = false;
-
-      // Send selection (Layout listens and opens sidebar)
       this.selection.setCoord(p.lat, p.lng);
-
       setTimeout(() => { controls.enabled = true; controls.autoRotate = prevAR; }, 250);
     });
 
-    // Optional: click bare globe to select too
     this.globe.onGlobeClick?.(({ lat, lng }: any) => this.selection.setCoord(lat, lng));
 
-    // --- Data → dot heatmap ---
     if (environment.mock) {
-      this.drawDotHeat(this.mapCoords(DEMO_COORDS));
+      this.drawRingsWithHitboxes(this.mapCoords(DEMO_COORDS));
     } else {
       this.api.getCoordinates().subscribe({
-        next: coords => this.drawDotHeat(this.mapCoords(coords)),
-        error: ()    => this.drawDotHeat(this.mapCoords([]))
+        next: coords => this.drawRingsWithHitboxes(this.mapCoords(coords)),
+        error: ()    => this.drawRingsWithHitboxes(this.mapCoords([]))
       });
     }
   }
@@ -133,26 +115,42 @@ export class GlobeComponent implements AfterViewInit, OnDestroy {
     }));
   }
 
-  private drawDotHeat(points: Pt[]) {
+  private drawRingsWithHitboxes(points: Pt[]) {
     const colorOf = (w: number) =>
       w > 60 ? 'rgba(255,45,46,0.92)' :
       w > 25 ? 'rgba(255,180,0,0.88)' :
                'rgba(34,197,94,0.85)';
 
     this.globe
+      .ringsData(points)
+      .ringLat((d: Pt) => d.lat)
+      .ringLng((d: Pt) => d.lng)
+      .ringColor((d: Pt) => colorOf(d.weight))
+      .ringResolution(24)
+      .ringMaxRadius((d: Pt) => 0.8 + d.weight * 0.02)
+      .ringPropagationSpeed((d: Pt) => 0.8 + d.weight * 0.02)
+      .ringRepeatPeriod((d: Pt) => 900 - Math.min(600, d.weight * 6));
+
+    // invisible “hitbox” points sized to match rings
+    this.globe
       .pointsData(points)
       .pointLat((d: Pt) => d.lat)
       .pointLng((d: Pt) => d.lng)
-      .pointColor((d: Pt) => colorOf(d.weight))
-      .pointAltitude((d: Pt) => 0.009 + d.weight * 0.00035) // tall enough for easy tapping
-      .pointRadius(0.55)          // larger hit area
-      .pointResolution(12)        // smoother round dots
-      .pointsMerge(false)         // separate meshes => better picking
-      .pointsTransitionDuration(300);
+      .pointColor(() => 'rgba(0,0,0,0)')
+      .pointAltitude(() => 0.02)
+      .pointRadius((d: Pt) => 0.3 + d.weight * 0.02) // larger, matches ring feel
+      .pointResolution(8)
+      .pointsMerge(false)
+      .pointsTransitionDuration(0);
   }
 
-  // UI controls
   resetView() { this.globe.pointOfView(this.pov, 800); }
-  zoomIn()  { const c = this.globe.pointOfView(); this.globe.pointOfView({ altitude: Math.max(0.8, (c?.altitude ?? 2.5) * 0.8) }, 300); }
-  zoomOut() { const c = this.globe.pointOfView(); this.globe.pointOfView({ altitude: Math.min(5.0, (c?.altitude ?? 2.5) / 0.8) }, 300); }
+  zoomIn()  {
+    const c = this.globe.pointOfView();
+    this.globe.pointOfView({ altitude: Math.max(0.8, (c?.altitude ?? 2.5) * 0.8) }, 300);
+  }
+  zoomOut() {
+    const c = this.globe.pointOfView();
+    this.globe.pointOfView({ altitude: Math.min(5.0, (c?.altitude ?? 2.5) / 0.8) }, 300);
+  }
 }
