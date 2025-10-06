@@ -1,8 +1,20 @@
+# dependencies
 node_modules
-.git
-.gitignore
+npm-debug.log
+yarn-error.log
+.pnpm-store
+
+# builds
 dist
 .tmp
-Dockerfile*
-docker-compose*
-README.md
+out
+coverage
+
+# IDE/editor
+.vscode
+.idea
+*.swp
+
+# env/secrets (no runtime templating used anyway)
+.env
+.env.*

@@ -7,7 +7,9 @@ import { NewsItem } from '../../models/news-item.model';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   constructor(private http: HttpClient) {}
-  getCoordinates(): Observable<Coordinate[]> { return this.http.get<Coordinate[]>('/coordinates'); }
+  getCoordinates(): Observable<Coordinate[]> {
+    return this.http.get<Coordinate[]>('/coordinates');
+  }
   getNewsByCoord(lat: number, lng: number): Observable<NewsItem[]> {
     return this.http.get<NewsItem[]>(`/news?lat=${lat}&lng=${lng}`);
   }
