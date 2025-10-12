@@ -1,0 +1,30 @@
+<div
+  class="layout-grid"
+  [class.open]="sidebarOpenDesktop"
+  [class.lock-scroll]="sidebarOpenMobile"
+>
+  <!-- Top nav -->
+  <app-navbar (toggleSidebar)="toggleSidebar()" class="nav"></app-navbar>
+
+  <!-- Globe -->
+  <section class="main">
+    <app-globe class="block w-full h-[calc(100vh-56px)]"></app-globe>
+  </section>
+
+  <!-- Desktop sidebar (only ≥ md) -->
+  <aside class="aside hidden md:block">
+    <app-sidebar [open]="sidebarOpenDesktop">
+      <app-news-feed></app-news-feed>
+    </app-sidebar>
+  </aside>
+
+  <!-- Mobile overlay (only < md) -->
+  <div class="overlay md:hidden" [class.hidden]="!sidebarOpenMobile">
+    <div class="backdrop" (click)="sidebarOpenMobile = false"></div>
+    <div class="sheet bg-secondary">
+      <app-sidebar [open]="true" (close)="sidebarOpenMobile = false">
+        <app-news-feed></app-news-feed>
+      </app-sidebar>
+    </div>
+  </div>
+</div>

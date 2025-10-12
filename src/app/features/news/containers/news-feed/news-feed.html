@@ -1,0 +1,26 @@
+<div class="news-feed-timeline">
+  <ul class="tl" role="list">
+    <li *ngFor="let n of items" class="tl-item">
+      <a [href]="n.url" target="_blank" rel="noopener" class="tl-card">
+        <span class="tl-dot" aria-hidden="true"></span>
+
+        <div class="tl-body">
+          <h3 class="tl-title">{{ n.title }}</h3>
+
+          <div class="tl-meta">
+            <span class="tl-source">{{ n.source }}</span>
+            <span class="tl-sep">•</span>
+            <time class="tl-time">{{ n.publishedAt | date:'short' }}</time>
+          </div>
+
+          <p *ngIf="n.excerpt" class="tl-excerpt">{{ n.excerpt }}</p>
+        </div>
+      </a>
+    </li>
+
+    <li *ngIf="!items?.length" class="tl-empty">
+      <div class="tl-empty-ill">🛰️</div>
+      <p>Click the globe to load news for that region.</p>
+    </li>
+  </ul>
+</div>

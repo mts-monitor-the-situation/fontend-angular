@@ -1,0 +1,20 @@
+# dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-store
+
+# builds
+dist
+.tmp
+out
+coverage
+
+# IDE/editor
+.vscode
+.idea
+*.swp
+
+# env/secrets (no runtime templating used anyway)
+.env
+.env.*

@@ -1,0 +1,15 @@
+/* Tailwind v4 import (works in SCSS global styles) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure body/app takes full height */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  @apply bg-secondary text-text; /* 👈 dark background + light text */
+}

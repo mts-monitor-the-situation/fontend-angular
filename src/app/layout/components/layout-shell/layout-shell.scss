@@ -1,0 +1,95 @@
+.layout-grid {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 1fr 0; /* collapsed by default */
+  // transition: grid-template-columns 0.25s ease;
+  overflow: hidden;
+}
+
+.layout-grid.open {
+  grid-template-columns: 1fr 380px;
+} /* open state */
+
+.nav {
+  grid-row: 1/2;
+  grid-column: 1/-1;
+  border-bottom: 1px solid #e5e7eb;
+}
+.main {
+  grid-row: 2/3;
+  grid-column: 1/2;
+}
+.aside {
+  grid-row: 2/3;
+  grid-column: 2/3;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .aside {
+    display: block;
+  } /* desktop uses real column */
+  .overlay {
+    display: none !important;
+  } /* NEVER overlay on desktop */
+}
+.lock-scroll {
+  position: relative;
+}
+/* default: no scroll lock on desktop */
+.lock-scroll::before {
+  content: none;
+}
+
+/* Mobile-only scroll lock */
+@media (max-width: 767.98px) {
+  .lock-scroll {
+    position: relative;
+  }
+  .lock-scroll::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none; /* ← don’t block clicks */
+  }
+}
+
+/* === Mobile overlay === */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+.overlay.hidden {
+  display: none;
+}
+
+/* Optional dim; sheet covers entire screen so this can be subtle or removed */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15); /* light dim; set to 0 to remove */
+}
+
+/* Full-viewport panel */
+.sheet {
+  position: absolute;
+  inset: 0; /* top/right/bottom/left: 0 */
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Respect safe areas on iOS */
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  overflow: auto; /* content scrolls; background stays fixed */
+}
+
+/* When >= md, never use overlay — desktop uses the grid column */
+@media (min-width: 768px) {
+  .overlay {
+    display: none !important;
+  }
+}
